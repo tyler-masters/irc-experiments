@@ -82,8 +82,25 @@ class IRC:
                 code = line.split(':')[1]
                 break
 
-        print(f"Sending PONG {code}")
-        self.send(f"PONG {code}")
+        self.pong(code)
+
+    def ping_response(self):
+        """
+        Backwards compatible method for `pong()`.
+        """
+
+        self.pong()
+
+    def pong(self, code=""):
+        """
+        Responds to a server `PING` message with the appropriate `PONG` message response.
+        """
+
+        try:
+            print(f"Sending PONG {code}")
+            self.send(f"PONG {code}")
+        except Exception as e:
+            print(e)
 
     def receive(self):
         """
