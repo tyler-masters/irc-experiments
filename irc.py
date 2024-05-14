@@ -106,3 +106,14 @@ class IRC:
         """
 
         self.irc.send(bytes(message + "\n", self.encoding))
+
+class Message:
+    """
+    Represents a message received from the IRC server.
+    """
+
+    def __init__(self, message):
+        self.text = message
+
+    def __str__(self) -> str:
+        return self.text
