@@ -15,6 +15,10 @@ class IRC:
     irc = socket.socket()
 
     def __init__(self):
+        """
+        Initialize the IRC object.
+        """
+
         self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def connect(self, server, port, botnick, botpass="", botnickpass="", channel=""):
@@ -48,21 +52,28 @@ class IRC:
         """
         Joins `channel`.
         """
+
         self.send(f"JOIN {channel}")
 
     def login(self):
+        """
+        Login to the Undernet X bot.
+        """
+
         self.msg("x@channels.undernet.org", "LOGIN hostname and password goes here")
 
     def msg(self, channel_or_nick, text):
         """
-        Sends the `text` to `channel_or_nick`.
+        Sends the `text` to `channel_or_nick` as an IRC `PRIVMSG` command.
         """
+
         self.send(f"PRIVMSG {channel_or_nick} :{text}")
 
     def ping_pong_auth(self):
         """
         Handles the initial PING-PONG handshake from the server.
         """
+
         lines = self.receive()
         code = ""
 
@@ -78,6 +89,7 @@ class IRC:
         """
         Receives data from the server and returns it as an array of lines.
         """
+
         time.sleep(1)
 
         try:
@@ -92,4 +104,5 @@ class IRC:
         """
         Sends `message` directly to the server.
         """
+
         self.irc.send(bytes(message + "\n", self.encoding))
