@@ -11,29 +11,29 @@ class IRC:
     network.
     """
 
+    debug = False
     encoding = "utf-8"
     irc = socket.socket()
 
-    def __init__(self):
+    def __init__(self, debug=False):
         """
         Initialize the IRC object.
         """
 
+        self.debug = debug
         self.irc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def connect(self, server, port, botnick, botpass="", botnickpass="", channel=""):
+    def connect(self, server, port, nickname, userpassword="", channel=""):
         """
-        Connects to `server` and `port` using the nickname in `botnick`.
+        Connects to `server` and `port` using the nickname in `nickname`.
         """
 
         print(f"Connecting to: {server}:{port}")
         self.irc.connect((server, port))
 
-        self.send(f"USER {botnick} {botnick} {botnick} :python")
-        self.send(f"NICK {botnick}")
 
-        if botnickpass and botpass:
-            self.send(f"NICKSERV IDENTIFY {botnickpass} {botpass}")
+        self.send(f"USER {nickname.lower()} {nickname.lower()} {nickname.lower()} :python")
+        self.send(f"NICK {nickname}")
 
         time.sleep(5)
 
@@ -41,9 +41,9 @@ class IRC:
 
         time.sleep(5)
 
-        self.login()
-
-        time.sleep(5)
+        if nickname and userpassword:
+            self.login(nickname, userpassword)
+            time.sleep(5)
 
         if channel:
             self.join(channel)
@@ -55,12 +55,12 @@ class IRC:
 
         self.send(f"JOIN {channel}")
 
-    def login(self):
+    def login(self, username, password):
         """
         Login to the Undernet X bot.
         """
 
-        self.msg("x@channels.undernet.org", "LOGIN hostname and password goes here")
+        self.msg("x@channels.undernet.org", f"LOGIN {username} {password}")
 
     def msg(self, channel_or_nick, text):
         """
@@ -112,6 +112,11 @@ class IRC:
         try:
             response = self.irc.recv(2040).decode(self.encoding)
             lines = response.split("\r\n")
+
+            if self.debug:
+                for line in lines:
+                    print(line)
+
             return lines
         except Exception as e:
             print(e)
@@ -121,6 +126,9 @@ class IRC:
         """
         Sends `message` directly to the server.
         """
+
+        if self.debug:
+            print(message)
 
         self.irc.send(bytes(message + "\n", self.encoding))
 
